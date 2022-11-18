@@ -6,6 +6,7 @@ import Product from "../product/Product";
 import mongoose, { Schema } from "mongoose";
 import { config } from "../config/config";
 import ProductRepository from "./ProductRepository";
+import { assert } from "node:console";
 
 type makeRentProps = {
   customer: string,
@@ -82,21 +83,23 @@ class RentRepository {
     }
 
     console.log(props);
-    
-    // let col = RentRepository.rentCollection;
-    // let session = null;
-    // col.createCollection().
-    // then(()=> col.startSession()).
-    // then(_sesion => {
-    //   session = _sesion;
-    //   return session.withTransaction(()=>{
-    //     return 
-    //   })
-    // })
-
-
-
     let toAdd = new RentRepository.rentCollection(props)
+
+    
+    let col = RentRepository.rentCollection;
+    let session = null;
+    col.createCollection().
+    then(()=> col.startSession()).
+    then(_sesion => {
+      session = _sesion;
+      return session.withTransaction(()=>{
+        return toAdd.save()
+      })
+      }).then(()=>
+        RentRepository.rentCollection.countDocuments({customer: rent.customer})
+      ).then((count)=>assert(count <= (rent.customer.maxProducts ?? 0)))
+
+
     toAdd.save()
 
   }

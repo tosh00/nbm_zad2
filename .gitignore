@@ -1,4 +1,4 @@
 node_modules/
 .env
 build/
-database-data/
+package-lock.json
