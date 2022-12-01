@@ -47,9 +47,9 @@ const main = async ()=>{
     const customerRepo = new CustomerRepository();
     const rentRepo = new RentRepository();    
 
-    const m = new Music('asda', 12, 'ddda', 'gfd');
+    // const m = new Music('asda', 12, 'ddda', 'gfd');
 
-    productRepo.add(m)
+    // productRepo.add(m)
 
     // const c = await customerRepo.get(0);
     // const p = await productRepo.get(0);
@@ -60,10 +60,9 @@ const main = async ()=>{
 
     // rentRepo.add(r);
 
-    const x = await rentRepo.get(0);
+    const x = await productRepo.get(0);
     console.log(x);
     
 
 }
-
 main();

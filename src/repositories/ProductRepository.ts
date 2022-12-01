@@ -70,7 +70,7 @@ class ProductRepository {
                 product.id = _id;
                 return product;
             case "BoardGame":
-                difficulty = DifficultyLevel[difficultyLevel as keyof typeof DifficultyLevel];
+                difficulty = DifficultyLevel[difficultyLevel as keyof typeof DifficultyLevel];                
                 product = new BoardGame( serialNumber,basePrice,title,category, difficulty)
                 product.id = _id;
                 return product;
@@ -93,6 +93,7 @@ class ProductRepository {
         let x = results[index]
 
 
+        console.log(x);
         
 
         return ProductRepository.makeProduct(x, x._id.toString());
@@ -113,9 +114,10 @@ class ProductRepository {
             title: props._title,
             category: props._category,
             serialNumber: props._serialNumber,
-            className: item.constructor.name
+            className: item.constructor.name,
+            difficultyLevel: props._difficultyLevel
         }
-
+        
         // props._id = item.id;
         const toAdd = new ProductRepository.productsCollection(newProps);
 
@@ -145,12 +147,25 @@ class ProductRepository {
     }
 
     async findBySerialNumber(number: string): Promise<Product | null> {
-        return await this.findBy((item)=>number === item.serialNumber)
+        // return await this.findBy((item)=>number === item.serialNumber)
+
+        const x = await ProductRepository.productsCollection.findOne({serialNumber: number})
+        if(!x) return null;
+        const y = await ProductRepository.makeProduct(x, x._id.toString())
+        
+        return y;
     }
 
 
     async findById(id: string): Promise<Product | null> {
-        return  await this.findBy((item)=>id === item.id)
+        // return  await this.findBy((item)=>id === item.id)
+    
+        const x = await ProductRepository.productsCollection.findById(id);
+        if(!x) return null;
+        const y = await ProductRepository.makeProduct(x, x._id.toString())
+        
+        return y;
+    
     }
 
 }

@@ -3,7 +3,7 @@ import { IRepository } from "./Repository.type";
 import CustomerRepository from "./CustomerRepository";
 import Customer from "../customer/Customer";
 import Product from "../product/Product";
-import mongoose, { Schema } from "mongoose";
+import mongoose, { ClientSession, Schema } from "mongoose";
 import { config } from "../config/config";
 import ProductRepository from "./ProductRepository";
 import { assert } from "node:console";
@@ -81,13 +81,12 @@ class RentRepository {
       beginTime: rent.beginTime,
       endTime: rent.endTime
     }
-
-    console.log(props);
+    
     let toAdd = new RentRepository.rentCollection(props)
 
     
     let col = RentRepository.rentCollection;
-    let session = null;
+    let session: ClientSession | null = null;
     col.createCollection().
     then(()=> col.startSession()).
     then(_sesion => {
@@ -98,6 +97,7 @@ class RentRepository {
       }).then(()=>
         RentRepository.rentCollection.countDocuments({customer: rent.customer})
       ).then((count)=>assert(count <= (rent.customer.maxProducts ?? 0)))
+      .then(()=>session?.endSession())
 
 
     toAdd.save()

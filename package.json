@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "rm -rf build/ && tsc && node ./build/test/tests.js",
     "start": "node build/server.js",
     "serve": "nodemon",
     "build": "rm -rf build/ && tsc"
