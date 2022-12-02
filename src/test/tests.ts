@@ -114,12 +114,11 @@ const CRUDRentTest = async () =>{
 
     await productRepo.add(product);
     await customerRepo.add(customer);
+    
     await rentRepo.add(rent);
 
     const rent_db = await rentRepo.findById(rent.id);
 
-    console.log(rent_db);
-    console.log(rent);
     
 
     // assert(JSON.stringify(rent_db) === JSON.stringify(rent), 'rent creation and readability fine 1')
@@ -128,7 +127,7 @@ const CRUDRentTest = async () =>{
 
     await rentRepo.remove(rent);
     await customerRepo.remove(customer);
-    await productRepo.remove(product)
+    await productRepo.remove(product);
 
 
 

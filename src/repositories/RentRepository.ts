@@ -8,11 +8,39 @@ import { config } from "../config/config";
 import ProductRepository from "./ProductRepository";
 import { assert } from "node:console";
 
+
+
+
+
 type makeRentProps = {
   customer: string,
   product: string,
-  beginTime: Date
+  beginTime: Date,
+  _id: mongoose.Types.ObjectId
 }
+
+interface IProduct {
+    className: string,
+    basePrice: number,
+    title: string,
+    category: string,
+    serialNumber: string,
+    difficultyLevel: string | undefined
+}
+
+
+const productSchema = new Schema<IProduct>({
+    className: { type: String, required: true, enum: ['BoardGame', 'VideoGame', 'Movie', 'Music'] },
+    basePrice: { type: Number, required: true },
+    title: { type: String, required: true },
+    category: { type: String, required: true },
+    serialNumber: { type: String, required: true },
+    difficultyLevel: { type: String, required: false, enum: ['Easy', 'Medium', 'Hard', 'VeryHard'] }
+},
+{
+    versionKey: false
+}
+)
 
 interface IRent {
   customer: string,
@@ -50,13 +78,14 @@ class RentRepository {
     const c = await customerRepo.findById(r.customer.toString());
     const p = await productRepo.findById(r.product.toString());
 
-    console.log(c, p);
+    // console.log(c, p);
 
     if(!p || !c){
       console.error('produkt lub klient nie są w repozytorium')
       return
     }
     const rent =  new Rent(c, p, r.beginTime)
+    rent.id = r._id.toString();
     return rent
   }
 
@@ -84,10 +113,9 @@ class RentRepository {
     
     let toAdd = new RentRepository.rentCollection(props)
 
-    
     let col = RentRepository.rentCollection;
     let session: ClientSession | null = null;
-    col.createCollection().
+    await col.createCollection().
     then(()=> col.startSession()).
     then(_sesion => {
       session = _sesion;
@@ -98,11 +126,10 @@ class RentRepository {
         RentRepository.rentCollection.countDocuments({customer: rent.customer})
       ).then((count)=>assert(count <= (rent.customer.maxProducts ?? 0)))
       .then(()=>session?.endSession())
-
   }
 
   async remove(rent: Rent) {
-    RentRepository.rentCollection.findByIdAndDelete(rent.id);
+    await RentRepository.rentCollection.findByIdAndDelete(rent.id);
   }
   
   async size(): Promise<number> {
@@ -118,25 +145,23 @@ class RentRepository {
 
   async getAll(): Promise<Rent[]> {
     const res = await RentRepository.rentCollection.find();
-
-    //to nie działa
-    const mapped = await Promise.all( res.map(async (item) => {return await RentRepository.makeRent(item)}))
     
-    return  mapped.filter((item): item is Rent => item != null);
+
+    const mapped = await Promise.all( res.map(async (item) => {return await RentRepository.makeRent(item)}))
+    const filltered =mapped.filter((item): item is Rent => item != null);
+    
+    return  filltered;
   }
 
   async findBy(filterFunction: (item: Rent) => boolean): Promise<Rent[]> {
     const all = await this.getAll();
-    console.log("all");
-    
-    console.log(all);
-    console.log("all");
     
     return all.filter(filterFunction)
   }
 
   async findById(id: string): Promise<Rent> {
     const res = await this.findBy(rent => id === rent.id)
+    
     return res[0];
   }
 }
