@@ -1,4 +1,4 @@
-import mongoose, {Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import { config } from "./config/config";
 import Address from "./customer/Address";
 import Customer from "./customer/Customer";
@@ -11,8 +11,7 @@ import Rent from "./rent/Rent";
 import CustomerRepository from "./repositories/CustomerRepository";
 import ProductRepository from "./repositories/ProductRepository";
 import RentRepository from "./repositories/RentRepository";
-
-
+import ProductsCache from "./cache/Cache";
 
 // const m = new Music('222', 12, 'dsa', 'biiadosa');
 // const v = new VideoGame('asd', 12, 'dsa', 'biiadosa', DifficultyLevel['Easy']);
@@ -21,48 +20,48 @@ import RentRepository from "./repositories/RentRepository";
 
 // const c = new Customer('Mariusz', 'Pudzianowski', '2137', a);
 
-
-
-
-
-
 // const r = new Rent(c, m, new Date());
 // rentRepo.add(r)
 
 // const ct = new Gold()
 // c.CustomerType = ct;
 
-
 // customerRepo.add(c);
 // console.log(r);
 
 // rentRepo.get(0).then(console.log)
 
-const main = async ()=>{
+const main = async () => {
+  console.log("xd");
 
-    console.log('xd');
-    
+  const productRepo = new ProductRepository();
+  const customerRepo = new CustomerRepository();
+  const rentRepo = new RentRepository();
 
-    const productRepo = new ProductRepository();
-    const customerRepo = new CustomerRepository();
-    const rentRepo = new RentRepository();    
+  // const m = new Music('asda', 12, 'ddda', 'gfd');
 
-    // const m = new Music('asda', 12, 'ddda', 'gfd');
+  // productRepo.add(m)
 
-    // productRepo.add(m)
+  // const c = await customerRepo.get(0);
+  // const p = await productRepo.get(0);
+  // console.log(c, p);
 
-    // const c = await customerRepo.get(0);
-    // const p = await productRepo.get(0);
-    // console.log(c, p);
+  // if(!p || !c) return
+  // const r = new Rent(c, p, new Date());
 
-    // if(!p || !c) return
-    // const r = new Rent(c, p, new Date());
+  // rentRepo.add(r);
 
-    // rentRepo.add(r);
+  // const x = await productRepo.get(0);
+  // console.log(x);
 
-    const x = await productRepo.get(0);
-    console.log(x);
-    
+  const redisInstance = new ProductsCache();
+  const product = new Music('music 1', 12, 'ddda', 'gfd');
+  
+  await redisInstance.setProduct(product);
 
-}
+  const productFromCache = await redisInstance.getProduct(product.id);
+  console.log(productFromCache);
+  
+
+};
 main();

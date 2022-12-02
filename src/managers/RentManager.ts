@@ -38,3 +38,5 @@ class RentManager{
         return sum;
     }
 }
+
+export default RentManager;
