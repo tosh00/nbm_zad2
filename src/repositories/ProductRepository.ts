@@ -52,8 +52,7 @@ const productSchema = new Schema<IProduct>(
 );
 
 class ProductRepository {
-  static productsCollection: mongoose.Model<IProduct> =
-    mongoose.model<IProduct>("Product", productSchema);
+    static productsCollection: mongoose.Model<IProduct> = mongoose.model<IProduct>('Product', productSchema);
 
   constructor() {
     mongoose.connect(config.mongo.url);
@@ -78,35 +77,20 @@ class ProductRepository {
         product.id = _id;
         return product;
 
-      case "Music":
-        product = new Music(serialNumber, basePrice, title, category);
-        product.id = _id;
-        return product;
-      case "BoardGame":
-        difficulty =
-          DifficultyLevel[difficultyLevel as keyof typeof DifficultyLevel];
-        product = new BoardGame(
-          serialNumber,
-          basePrice,
-          title,
-          category,
-          difficulty
-        );
-        product.id = _id;
-        return product;
-      case "VideoGame":
-        difficulty =
-          DifficultyLevel[difficultyLevel as keyof typeof DifficultyLevel];
-        product = new VideoGame(
-          serialNumber,
-          basePrice,
-          title,
-          category,
-          difficulty
-        );
-        product.id = _id;
-        return product;
-    }
+            case "Music":
+                product = new Music( serialNumber,basePrice,title,category)
+                product.id = _id;
+                return product;
+            case "BoardGame":
+                difficulty = DifficultyLevel[difficultyLevel as keyof typeof DifficultyLevel];                
+                product = new BoardGame( serialNumber,basePrice,title,category, difficulty)
+                product.id = _id;
+                return product;
+            case "VideoGame":
+                difficulty = DifficultyLevel[difficultyLevel as keyof typeof DifficultyLevel];
+                product = new VideoGame( serialNumber,basePrice,title,category, difficulty)
+                product.id = _id;
+                return product;        }
 
     return null;
   }
@@ -143,26 +127,20 @@ class ProductRepository {
     await toAdd.save();
   }
 
-  async remove(item: Product): Promise<void> {
-    ProductRepository.productsCollection
-      .findOneAndRemove({ serialNumber: item.serialNumber })
-      .then(() => {
-        console.log("deleted");
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-  }
-  async size(): Promise<number> {
-    return await ProductRepository.productsCollection.countDocuments();
-  }
-  async getAll(): Promise<Product[]> {
-    let results = await ProductRepository.productsCollection.find();
-    let mapped = results.map((item) => {
-      return ProductRepository.makeProduct(item, item._id.toString());
-    });
-    return mapped.filter((item): item is Product => item != null);
-  }
+
+    async remove(item: Product): Promise<void> {
+        ProductRepository.productsCollection.findOneAndRemove({serialNumber: item.serialNumber})
+        .catch((e)=>{console.error(e);})
+        
+    }
+    async size(): Promise<number> {
+        return await ProductRepository.productsCollection.countDocuments();
+    }
+    async getAll(): Promise<Product[]>{
+         let results = await ProductRepository.productsCollection.find();
+         let mapped = results.map(item => { return ProductRepository.makeProduct(item, item._id.toString())})
+         return  mapped.filter((item): item is Product => item != null);
+    }
 
   async findBy(filterFunction: (item: Product) => boolean) {
     let allProducts = await this.getAll();

@@ -96,11 +96,9 @@ class CustomerRepository {
      async add(item: Customer): Promise<void> {
         const { ...props }: any = item;
 
-        // props.className = item.constructor.name;
-        console.log(props);
-        console.log(props._CustomerType);
 
         let newProps = {
+            _id: props._id,
             name: props._name,
             surname: props._surname,
             pid: props._pid,
@@ -113,6 +111,7 @@ class CustomerRepository {
         }
 
         // props._id = item.id;
+        
         const toAdd = new CustomerRepository.customersCollection(newProps);
 
         await toAdd.save();
@@ -120,7 +119,7 @@ class CustomerRepository {
     }
 
      async remove(item: Customer): Promise<void> {
-        CustomerRepository.customersCollection.findByIdAndDelete(item.id);
+        await CustomerRepository.customersCollection.findByIdAndDelete(item.id);
     }
 
      async size(): Promise<number> {
@@ -139,12 +138,20 @@ class CustomerRepository {
     }
 
      async findByPersonalID(personalID: string) {
-        return this.findBy((item)=>personalID === item.pid)
+        const x = await CustomerRepository.customersCollection.findOne({pid: personalID});
+        if(!x) return null;
+        const y = await CustomerRepository.makeCustomer(x)
+        
+        return y;
     }
 
 
     async findById(id: string) {
-        return this.findBy((item)=>id === item.id)
+        const x = await CustomerRepository.customersCollection.findById(id);
+        if(!x) return null;
+        const y = await CustomerRepository.makeCustomer(x)
+        
+        return y;
     }
 
     async setCustomerType(c: Customer, t: CustomerType) {

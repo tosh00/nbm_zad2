@@ -99,9 +99,6 @@ class RentRepository {
       ).then((count)=>assert(count <= (rent.customer.maxProducts ?? 0)))
       .then(()=>session?.endSession())
 
-
-    toAdd.save()
-
   }
 
   async remove(rent: Rent) {
@@ -121,17 +118,26 @@ class RentRepository {
 
   async getAll(): Promise<Rent[]> {
     const res = await RentRepository.rentCollection.find();
+
+    //to nie działa
     const mapped = await Promise.all( res.map(async (item) => {return await RentRepository.makeRent(item)}))
+    
     return  mapped.filter((item): item is Rent => item != null);
   }
 
   async findBy(filterFunction: (item: Rent) => boolean): Promise<Rent[]> {
     const all = await this.getAll();
+    console.log("all");
+    
+    console.log(all);
+    console.log("all");
+    
     return all.filter(filterFunction)
   }
 
-  async findById(id: string): Promise<Rent[]> {
-    return this.findBy(rent => id === rent.id)
+  async findById(id: string): Promise<Rent> {
+    const res = await this.findBy(rent => id === rent.id)
+    return res[0];
   }
 }
 
