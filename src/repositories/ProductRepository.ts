@@ -128,7 +128,6 @@ class ProductRepository {
 
     async remove(item: Product): Promise<void> {
         ProductRepository.productsCollection.findOneAndRemove({serialNumber: item.serialNumber})
-        .then(()=>{console.log("deleted")})
         .catch((e)=>{console.error(e);})
         
     }
