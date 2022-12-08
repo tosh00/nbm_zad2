@@ -4,8 +4,8 @@ import Game from './Game';
 const BOARD_GAME_MULTIPLIER = 1.6;
 
 class BoardGame extends Game {
-  constructor(serialNumber: string, basePrice: number, title: string, category: string, difficultyLevel: DifficultyLevel) {
-    super(serialNumber, basePrice, title, category, difficultyLevel);
+  constructor(serialNumber: string, basePrice: number, title: string, category: string, difficultyLevel: DifficultyLevel, id?: string) {
+    super(serialNumber, basePrice, title, category, difficultyLevel, id);
   }
 
   getProductInfo(): string {

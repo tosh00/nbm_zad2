@@ -9,61 +9,73 @@ import Game from "../product/Game";
 import mongoose, { Schema } from "mongoose";
 import { config } from "../config/config";
 import { it } from "node:test";
-
+import ProductsCache from "../cache/Cache";
 
 type makeProductProps = {
-    className: string,
-    basePrice: number,
-    title: string,
-    category: string,
-    serialNumber: string,
-    difficultyLevel: string | undefined
-}
-
+  className: string;
+  basePrice: number;
+  title: string;
+  category: string;
+  serialNumber: string;
+  difficultyLevel: string | undefined;
+};
 
 interface IProduct {
-    className: string,
-    basePrice: number,
-    title: string,
-    category: string,
-    serialNumber: string,
-    difficultyLevel: string | undefined
+  className: string;
+  basePrice: number;
+  title: string;
+  category: string;
+  serialNumber: string;
+  difficultyLevel: string | undefined;
 }
 
-
-const productSchema = new Schema<IProduct>({
-    className: { type: String, required: true, enum: ['BoardGame', 'VideoGame', 'Movie', 'Music'] },
+const productSchema = new Schema<IProduct>(
+  {
+    className: {
+      type: String,
+      required: true,
+      enum: ["BoardGame", "VideoGame", "Movie", "Music"],
+    },
     basePrice: { type: Number, required: true },
     title: { type: String, required: true },
     category: { type: String, required: true },
     serialNumber: { type: String, required: true },
-    difficultyLevel: { type: String, required: false, enum: ['Easy', 'Medium', 'Hard', 'VeryHard'] }
-},
-{
-    versionKey: false
-}
-)
+    difficultyLevel: {
+      type: String,
+      required: false,
+      enum: ["Easy", "Medium", "Hard", "VeryHard"],
+    },
+  },
+  {
+    versionKey: false,
+  }
+);
 
 class ProductRepository {
     static productsCollection: mongoose.Model<IProduct> = mongoose.model<IProduct>('Product', productSchema);
 
-    constructor(){
-        mongoose.connect(config.mongo.url);
-    }
+  constructor() {
+    mongoose.connect(config.mongo.url);
+  }
 
-
-
-
-
-
-    static makeProduct({ className, basePrice, title, category, serialNumber, difficultyLevel }: makeProductProps, _id: string): Product | null {
-        let difficulty: DifficultyLevel;
-        let product: Product;
-        switch (className) {
-            case "Movie":
-                product = new Movie( serialNumber,basePrice,title,category)
-                product.id = _id;
-                return product;
+  static makeProduct(
+    {
+      className,
+      basePrice,
+      title,
+      category,
+      serialNumber,
+      difficultyLevel,
+    }: makeProductProps,
+    _id: string
+  ): Product | null {
+    let difficulty: DifficultyLevel;
+    let product: Product;
+    switch (className) {
+      case "Movie":
+        product = new Movie(serialNumber, basePrice, title, category);
+        product.id = _id;
+        return product;
 
             case "Music":
                 product = new Music( serialNumber,basePrice,title,category)
@@ -80,50 +92,40 @@ class ProductRepository {
                 product.id = _id;
                 return product;        }
 
-        return null;
+    return null;
+  }
+
+  async get(index: number): Promise<Product | null> {
+    const results = await ProductRepository.productsCollection.find();
+    if (!results || results.length < 1 || results.length <= index) {
+      return null;
     }
+    
+    const x = results[index];
 
-    async get(index: number): Promise<Product | null> {
+    return ProductRepository.makeProduct(x, x._id.toString());
+  }
 
+  async add(item: Product): Promise<void> {
+    const { ...props }: any = item;
 
-        const results = await ProductRepository.productsCollection.find()
-        if (!results || results.length < 1 || results.length <= index) {
-            return null;
-        }
-        let x = results[index]
+    // props.className = item.constructor.name;
 
+    let newProps = {
+      _id: new mongoose.Types.ObjectId(props._id),
+      basePrice: props._basePrice,
+      title: props._title,
+      category: props._category,
+      serialNumber: props._serialNumber,
+      className: item.constructor.name,
+      difficultyLevel: props._difficultyLevel,
+    };
 
-        console.log(x);
-        
+    // props._id = item.id;
+    const toAdd = new ProductRepository.productsCollection(newProps);
 
-        return ProductRepository.makeProduct(x, x._id.toString());
-
-
-
-    }
-
-    async add(item: Product): Promise<void> {
-
-        const { ...props }: any = item;
-
-        // props.className = item.constructor.name;
-
-        let newProps = {
-            _id: new mongoose.Types.ObjectId(props._id),
-            basePrice: props._basePrice,
-            title: props._title,
-            category: props._category,
-            serialNumber: props._serialNumber,
-            className: item.constructor.name,
-            difficultyLevel: props._difficultyLevel
-        }
-        
-        // props._id = item.id;
-        const toAdd = new ProductRepository.productsCollection(newProps);
-
-        await toAdd.save();
-
-    }
+    await toAdd.save();
+  }
 
 
     async remove(item: Product): Promise<void> {
@@ -140,33 +142,32 @@ class ProductRepository {
          return  mapped.filter((item): item is Product => item != null);
     }
 
-    async findBy(filterFunction: (item: Product) => boolean) {
-        let allProducts = await this.getAll();
-        return allProducts.filter(filterFunction)[0];
-    }
+  async findBy(filterFunction: (item: Product) => boolean) {
+    let allProducts = await this.getAll();
+    return allProducts.filter(filterFunction)[0];
+  }
 
-    async findBySerialNumber(number: string): Promise<Product | null> {
-        // return await this.findBy((item)=>number === item.serialNumber)
+  async findBySerialNumber(number: string): Promise<Product | null> {
+    // return await this.findBy((item)=>number === item.serialNumber)
 
-        const x = await ProductRepository.productsCollection.findOne({serialNumber: number})
-        if(!x) return null;
-        const y = await ProductRepository.makeProduct(x, x._id.toString())
-        
-        return y;
-    }
+    const x = await ProductRepository.productsCollection.findOne({
+      serialNumber: number,
+    });
+    if (!x) return null;
+    const y = await ProductRepository.makeProduct(x, x._id.toString());
 
+    return y;
+  }
 
-    async findById(id: string): Promise<Product | null> {
-        // return  await this.findBy((item)=>id === item.id)
-    
-        const x = await ProductRepository.productsCollection.findById(id);
-        if(!x) return null;
-        const y = await ProductRepository.makeProduct(x, x._id.toString())
-        
-        return y;
-    
-    }
+  async findById(id: string): Promise<Product | null> {
+    // return  await this.findBy((item)=>id === item.id)
 
+    const x = await ProductRepository.productsCollection.findById(id);
+    if (!x) return null;
+    const y = await ProductRepository.makeProduct(x, x._id.toString());
+
+    return y;
+  }
 }
 
 export default ProductRepository;
