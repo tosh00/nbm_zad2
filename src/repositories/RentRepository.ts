@@ -50,7 +50,7 @@ class RentRepository {
     const c = await customerRepo.findById(r.customer.toString());
     const p = await productRepo.findById(r.product.toString());
 
-    console.log(c, p);
+    // console.log(c, p);
 
     if(!p || !c){
       console.error('produkt lub klient nie są w repozytorium')

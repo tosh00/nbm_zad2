@@ -2,14 +2,14 @@ import mongoose from "mongoose";
 import uuid4 from "uuid4";
 
 abstract class Product {
-  private _id: string;
-  private _basePrice: number;
-  private _title: string;
-  private _category: string;
-  private _serialNumber: string;
+  _id: string;
+  _basePrice: number;
+  _title: string;
+  _category: string;
+  _serialNumber: string;
 
-  constructor(serialNumber: string, basePrice: number, title: string, category: string) {
-    this._id = new mongoose.Types.ObjectId().toString();
+  constructor(serialNumber: string, basePrice: number, title: string, category: string, id: string = new mongoose.Types.ObjectId().toString()) {
+    this._id = id;
     this._basePrice = basePrice;
     this._title = title;
     this._category = category;
@@ -57,6 +57,7 @@ abstract class Product {
 
   getActualPrice?(): number;
   getProductInfo?(): string;
+  
 }
 
 export default Product;

@@ -13,6 +13,8 @@ import Gold from '../customer/CustomerType/Gold';import CustomerRepository from 
 import { exit } from "process";
 import Rent from "../rent/Rent";
 import RentRepository from "../repositories/RentRepository";
+import redisTests from './redisTests';
+
 
 
 const createReadAndDeleteProductTests = async () =>{
@@ -135,11 +137,14 @@ const CRUDRentTest = async () =>{
 }
 
 
+
+
 const doAllTests = async ()=> {
     // await createReadAndDeleteProductTests();
     // await findProductBySerialNumberTest();
     // await CRUDCustomerTest();
-    await CRUDRentTest();
+    // await CRUDRentTest();
+    await redisTests();
 
     exit()
 }
