@@ -50,7 +50,8 @@ const createReadAndDeleteProductTests = async () =>{
     prodduct2_db = await productRepo.findById(product2.id)
     prodduct3_db = await productRepo.findById(product3.id)
     prodduct4_db = await productRepo.findById(product4.id)
-
+    console.log(prodduct1_db);
+    
     assert(prodduct1_db === null)
     assert(prodduct2_db === null)
     assert(prodduct3_db === null)
@@ -139,10 +140,10 @@ const CRUDRentTest = async () =>{
 
 
 const doAllTests = async ()=> {
-    // await createReadAndDeleteProductTests();
-    // await findProductBySerialNumberTest();
-    // await CRUDCustomerTest();
-    // await CRUDRentTest();
+    await createReadAndDeleteProductTests();
+    await findProductBySerialNumberTest();
+    await CRUDCustomerTest();
+    await CRUDRentTest();
     await redisTests();
 
     exit()

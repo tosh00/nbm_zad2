@@ -15,13 +15,14 @@ services:
     volumes:
       - ./init-database.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
-  # mongo-express:
-  #   image: mongo-express
-  #   restart: always
-  #   ports:
-  #     - 8081:8081
-  #   environment:
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: admin
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: 1234
-  #     ME_CONFIG_MONGODB_SERVER: mongodb
-  #     ME_CONFIG_MONGODB_URL: mongodb://admin:1234@mongo:27017/
+  cache:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    volumes: 
+      - cache:/data
+volumes:
+  cache:
+    driver: local

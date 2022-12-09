@@ -53,9 +53,11 @@ const productSchema = new Schema<IProduct>(
 
 class ProductRepository {
     static productsCollection: mongoose.Model<IProduct> = mongoose.model<IProduct>('Product', productSchema);
-
+    cache: ProductsCache = new ProductsCache();
   constructor() {
+    
     mongoose.connect(config.mongo.url);
+    this.cache.connect()
   }
 
   static makeProduct(
@@ -131,6 +133,7 @@ class ProductRepository {
     async remove(item: Product): Promise<void> {
         await ProductRepository.productsCollection.findOneAndRemove({serialNumber: item.serialNumber})
         .catch((e)=>{console.error(e);})
+        await this.cache.clearCache();
         
     }
     async size(): Promise<number> {
@@ -160,8 +163,9 @@ class ProductRepository {
   }
 
   async findById(id: string): Promise<Product | null> {
-    // return  await this.findBy((item)=>id === item.id)
 
+    const p = await this.cache.getProduct(id)
+    if(p) return p;
     const x = await ProductRepository.productsCollection.findById(id);
     if (!x) return null;
     const y = await ProductRepository.makeProduct(x, x._id.toString());

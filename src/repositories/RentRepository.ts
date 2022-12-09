@@ -7,6 +7,7 @@ import mongoose, { ClientSession, Schema } from "mongoose";
 import { config } from "../config/config";
 import ProductRepository from "./ProductRepository";
 import { assert } from "node:console";
+import ProductsCache from "../cache/Cache";
 
 
 
@@ -63,10 +64,11 @@ const rentSchema = new Schema({
 
 class RentRepository {
   static rentCollection: mongoose.Model<IRent> = mongoose.model<IRent>('Rent', rentSchema);
-
+  cache: ProductsCache = new ProductsCache()
 
   constructor(){
     mongoose.connect(config.mongo.url);
+    this.cache.connect();
   }
 
 
@@ -112,6 +114,8 @@ class RentRepository {
     }
     
     let toAdd = new RentRepository.rentCollection(props)
+
+    this.cache.setProduct(rent.product);
 
     let col = RentRepository.rentCollection;
     let session: ClientSession | null = null;

@@ -45,6 +45,10 @@ class Cache {
     }
   }
 
+  isConnected(){
+    return this.client.isOpen;
+  }
+
   addEvents() {
     this.client.on("error", (err) => console.log("Redis Client Error", err));
     this.client.on("connect", () => {
@@ -52,6 +56,7 @@ class Cache {
   }
 
   async setProduct(product: Product | Game, expire = 600) {
+    if(!this.client.isOpen) return;
     const objectToWrite: WriteObject = {
       type: product.constructor.name as ProductsTypes,
       payload: product,
@@ -68,6 +73,7 @@ class Cache {
   }
 
   async getProduct(id: string): Promise<Product | undefined> {
+    if(!this.client.isOpen) return undefined;
     const res = (await this.client.get(id)) as string;
     const obj = await (JSON.parse(res)) as WriteObject;
 
@@ -90,6 +96,7 @@ class Cache {
   }
 
   async getProductsIdsArray(): Promise<string[]> {
+    if(!this.client.isOpen) return [];
     const res = await this.client.get(REDIS_PRODUCTS_KEY);
     const arr = res ? await JSON.parse(res) as string[] : [];
 
@@ -105,6 +112,7 @@ class Cache {
   }
 
   async addProductId(id: string) {
+    if(!this.client.isOpen) return;
     const arr = await this.getProductsIdsArray();
     const newArr = [...arr, id];
 
@@ -112,13 +120,15 @@ class Cache {
   }
 
   async productInCache(id: string) {
+    if(!this.client.isOpen) return;
     const arr = await this.getProductsIdsArray();
     return arr.includes(id);
   }
 
   async clearCache() {
+    if(!this.client.isOpen) return;
     const ids = await this.getProductsIdsArray();
-
+    if(!ids.length) return;
     await this.client.del(ids);
     await this.client.set(REDIS_PRODUCTS_KEY, JSON.stringify([]));
   }
