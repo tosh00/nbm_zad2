@@ -3,7 +3,7 @@ import { Client } from 'cassandra-driver';
 
 class CustomerRepository {
 
-  client;
+  client: Client;
 
   constructor(){
     this.client = new Client({ contactPoints: ['cassandra-node1', 'cassandra-node2'], keyspace: 'MyCassandraCluster', localDataCenter: 'dc1', });
