@@ -1,6 +1,6 @@
 import uuid4 from "uuid4";
 
-class Client {
+class Customer {
   id: string;
   name: string;
 
@@ -10,4 +10,4 @@ class Client {
   }
 }
 
-export default Client;
+export default Customer;

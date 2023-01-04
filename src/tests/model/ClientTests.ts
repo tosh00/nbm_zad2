@@ -1,5 +1,5 @@
 import assert from "assert";
-import Client from "../../model/Client";
+import Client from "../../model/Customer";
 import { testLog } from "../utils/logger";
 
 const PREFIX = 'Client Test';

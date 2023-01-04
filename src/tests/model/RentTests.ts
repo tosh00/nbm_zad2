@@ -1,5 +1,5 @@
 import assert from "assert";
-import Client from "../../model/Client";
+import Client from "../../model/Customer";
 import Product from "../../model/Product";
 import Rent from "../../model/Rent";
 import { testLog } from "../utils/logger";

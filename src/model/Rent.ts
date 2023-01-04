@@ -2,14 +2,14 @@ import uuid4 from 'uuid4';
 
 class Rent {
   id: string;
-  clientId: string;
+  customerId: string;
   productId: string;
   startDate: number;
   endDate: number;
 
   constructor(clientId: string, productId: string, id: string = uuid4()) {
     this.id = id;
-    this.clientId = clientId;
+    this.customerId = clientId;
     this.productId = productId;
     this.startDate = Date.now();
   }
