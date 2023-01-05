@@ -19,8 +19,8 @@ function rentConstructorTest() {
   const product1 = new Product('product 1', 10);
   const product2 = new Product('product 1', 11);
 
-  const rentInstance1 = new Rent(client1.id, product1.id);
-  const rentInstance2 = new Rent(client2.id, product2.id);
+  const rentInstance1 = new Rent(client1, product1);
+  const rentInstance2 = new Rent(client2, product2);
 
   assert(rentInstance1.id !== rentInstance2.id, 'Rents cannot be the same')
   log('Test 1 completed!');

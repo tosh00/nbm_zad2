@@ -12,6 +12,7 @@ export default function CustomerTests() {
 
 function customerRepositoryTest() {
   const cr =  new CustomerRepository();
+  assert(cr !== undefined, 'Repository did not create');
   log("Test 1 completed!");
   
 }

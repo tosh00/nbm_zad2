@@ -1,17 +1,23 @@
-import uuid4 from 'uuid4';
+import uuid4 from "uuid4";
+import Customer from "./Customer";
+import Product from "./Product";
 
 class Rent {
   id: string;
-  customerId: string;
-  productId: string;
+  customer: Customer;
+  product: Product;
   startDate: number;
   endDate: number;
 
-  constructor(clientId: string, productId: string, id: string = uuid4()) {
+  constructor(customer: Customer, product: Product, id: string = uuid4()) {
     this.id = id;
-    this.customerId = clientId;
-    this.productId = productId;
+    this.customer = customer;
+    this.product = product;
     this.startDate = Date.now();
+  }
+
+  rentEnded() {
+    return !!this.endDate;
   }
 
   endRent() {
@@ -19,11 +25,15 @@ class Rent {
   }
 
   getRentPrice() {
-    if (!this.endRent) {
-      return 0;
-    }
+    const endDate = !this.rentEnded ? Date.now() : this.endDate;
 
-    // to do
+    const rentDays = this.getNumbersOfDays(this.startDate, endDate);
+    return rentDays * this.product.price;
+  }
+
+  private getNumbersOfDays(begin: number, end: number) {
+    const milisecondsPerDay = 1000 * 60 * 60 * 24;
+    return Math.ceil((end - begin) / milisecondsPerDay);
   }
 }
 
