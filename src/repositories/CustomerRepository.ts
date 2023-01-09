@@ -6,14 +6,14 @@ class CustomerRepository {
   client: Client;
 
   constructor(){
-    this.client = new Client({ contactPoints: ['cassandra-node1', 'cassandra-node2'], keyspace: 'MyCassandraCluster', localDataCenter: 'dc1', });
-    this.client.connect().then(()=>{console.log('connected')}).catch((e) => {console.error(e);
-    });
-    
+    this.client = new Client({ contactPoints: ['localhost:9042', 'localhost:9043'], keyspace: 'nbd', localDataCenter: 'datacenter1', });
+    this.client.connect().then(()=>{console.log('connected')}).catch((e) => {console.error(e);});
   }
 
 
-  createClient(client: Customer): void {}
+  createClient(customer: Customer): void {
+    const query: string = `INSERT INTO customers (id, name) VALUES (${customer.id}, ${customer.name})`;
+  }
   readClients(): Customer[] { return []; }
   readClient(id: string): Customer[] { return []; }
   updateClient(id: string, client: Customer): void {}
