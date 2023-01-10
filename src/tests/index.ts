@@ -1,12 +1,18 @@
 import clientTests from './model/ClientTests';
 import productTests from './model/ProductTests';
 import rentTests from './model/RentTests';
-import CustomerTests from './repositories/CustomerRepositoryTest';
+import CustomerRepositoryTests from './repositories/CustomerRepositoryTest';
+import { greenBg } from './utils/logger';
 
 
-(() => {
+(async () => {
+  console.log(`------------- ${greenBg(" Tests Start ")} -------------\n`);
+  
+
   clientTests();
   productTests();
   rentTests();
-  CustomerTests();
+  await CustomerRepositoryTests();
+
+  console.log(`\n------------- ${greenBg("  Tests End  ")} -------------`);
 })();

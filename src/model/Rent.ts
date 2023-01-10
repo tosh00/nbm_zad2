@@ -14,8 +14,10 @@ class Rent {
     this.startDate = Date.now();
   }
 
-  endRent() {
-    this.endDate = Date.now();
+  endRent(timestamp: number = Date.now()) {
+    if (timestamp > this.startDate) {
+      this.endDate = timestamp;
+    }
   }
 
   getRentPrice() {
