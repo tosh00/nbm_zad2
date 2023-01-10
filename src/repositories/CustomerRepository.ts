@@ -3,6 +3,7 @@ import { Client, types } from "cassandra-driver";
 
 class CustomerRepository {
   client: Client;
+  connected: boolean = false;
 
   constructor() {
     this.client = new Client({
@@ -16,6 +17,7 @@ class CustomerRepository {
     await this.client
       .connect()
       .then(() => {
+        this.connected = true;
         // console.log("connected");
       })
       .catch((e) => {
